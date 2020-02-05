@@ -1,5 +1,6 @@
 package fr.epsi.api.user;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -25,12 +26,28 @@ class UserServiceImplTest {
 	@Test
 	void testFindAll() {		
 		//Arrange
+                  
 		List<User> users = new ArrayList<User>();
 		Mockito.doReturn(users).when(userRepository).findAll();
 		//Act
 		Iterable<User> result = sut.findAll();
 		//Assert
 		Assertions.assertEquals(users, result, "No user");
+           
 	}
+        
+       @Test
+       void TestSave() throws UnsupportedEncodingException{
+		//Arrange
+                
+                sut.save("Nicolas", "Nicolas");
+                List<User> users = new ArrayList<User>();
+		Mockito.doReturn(users).when(userRepository).findAll();
+		//Act
+		Iterable<User> result = sut.findAll();
+		//Assert
+                System.out.println("le tableau : " +result);
+//		Assertions.assertEquals(users, result, "No user");
+       }
 
 }
