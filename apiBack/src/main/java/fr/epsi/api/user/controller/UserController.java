@@ -34,7 +34,13 @@ public class UserController {
 	
 	@GetMapping("{pseudo}")
 	public UserDto find(@PathVariable String pseudo) {
-		User user = userService.find(pseudo);
+		User user = null;
+		try {
+			user = userService.find(pseudo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		assert user != null;
 		return user.toUserDto();
 	}
 

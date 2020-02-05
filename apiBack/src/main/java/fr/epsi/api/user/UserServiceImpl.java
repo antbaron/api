@@ -47,8 +47,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User find(String pseudo) {
-		return userRepository.findById(pseudo).get();
+	public User find(String pseudo) throws Exception {
+		if (userRepository.findById(pseudo).isPresent()){
+			return userRepository.findById(pseudo).get();
+		}
+		else{
+			throw new Exception("USER NOT FOUND");
+		}
 	}
 
 }

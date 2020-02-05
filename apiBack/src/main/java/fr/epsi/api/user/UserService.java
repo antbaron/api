@@ -10,6 +10,6 @@ public interface UserService {
 
 	void save(String pseudo, String password) throws UnsupportedEncodingException;
 
-	User find(String pseudo);
+	User find(String pseudo) throws Exception;
 	
 }
