@@ -14,7 +14,7 @@ public class User {
 	private String pseudo;
 
 	private String password;
-	
+
 	@OneToOne(mappedBy = "user")
 	private Financial financial;
 

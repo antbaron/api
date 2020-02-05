@@ -9,6 +9,8 @@ import org.springframework.util.Assert;
 
 import fr.epsi.api.security.SecurityService;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -48,7 +50,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User find(String pseudo) {
-		return userRepository.findById(pseudo).get();
+		Optional<User> optionalUser = userRepository.findById(pseudo);
+		if(optionalUser.isPresent()){
+			return  optionalUser.get();
+		}
+		else throw new EntityNotFoundException("User "+pseudo+" not found");
 	}
 
 }
