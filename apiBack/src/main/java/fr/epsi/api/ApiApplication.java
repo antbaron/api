@@ -8,7 +8,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class ApiApplication {
-
+        
+    //Ceci est un commentaire pour pratiquer le git commit
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
 	}
