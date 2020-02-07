@@ -1,5 +1,7 @@
 package fr.epsi.api.user;
 
+import fr.epsi.api.security.SecurityService;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,6 +24,9 @@ class UserServiceImplTest {
 
 	@Mock
 	UserRepository userRepository;
+        
+        @Mock
+	SecurityService securityService;
 	
 	@InjectMocks
 	public UserServiceImpl sut;
@@ -67,6 +74,25 @@ class UserServiceImplTest {
             //Assert
             Assertions.assertEquals("L'utilisateur bousquet n'existe pas", exception.getMessage());
         }
+        
+        @Test
+	void test_save() throws UnsupportedEncodingException {
+            //Arrange
+            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+            User user = new User(); 
+            user.setPseudo("allan");
+            user.setPassword("bousquet");
+
+            //Act
+            Mockito.doReturn("save").when(securityService).encryptPassword(anyString(),anyString());
+            Mockito.doReturn(null).when(userRepository).save(userCaptor.capture());
+            User userSaved = userCaptor.getValue();
+            sut.save("allan","bousquet");
+            
+            //
+            Assertions.assertEquals("allan",userSaved.getPseudo());
+            Assertions.assertEquals("bousquet",userSaved.getPassword());
+	}
         
         
         
