@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.epsi.api.security.SecurityService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,11 +33,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void login(String pseudo, String password) {
-		Optional<User> user = userRepository.findById(pseudo);
-		Assert.isTrue(
-				user.isPresent()
-						&& password.equals(securityService.decryptPassword(user.get().getPassword(), SECRET_KEY)),
-				"Not connected");
+            try {
+                Optional<User> user = userRepository.findById(pseudo);
+                Assert.isTrue(
+                        user.isPresent()
+                                && user.get().getPassword().equals(securityService.encryptPassword(password, SECRET_KEY)),
+                        "Not connected");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 
 	@Override
@@ -47,8 +53,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User find(String pseudo) {
-		return userRepository.findById(pseudo).get();
+	public User find(String pseudo)  {
+            Optional<User> user = userRepository.findById(pseudo);
+            if(user != null && !user.equals(Optional.empty())){
+                return user.get();
+            }else{
+                return null;
+            }
+            
 	}
 
 }
