@@ -53,7 +53,7 @@ class UserServiceImplTest {
             Mockito.doReturn(null).when(userRepository).save(ac.capture());
 			Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
             //Act
-            sut.save("Sam", "Password");
+            sut.save("UserTest", "UserPassword");
             //Assert
             Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
             Assertions.assertEquals("Sam", ac.getValue().getPseudo());
@@ -64,13 +64,13 @@ class UserServiceImplTest {
 	@Test
 	void testFind() {
 
-       /* ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
+       ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
         Mockito.doReturn(null).when(userRepository).save(ac.capture());
 		Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
 		
 		sut.find("antbaron");
 		
-		Mockito.verify(mock)*/
+		
 	}
 	
 	
