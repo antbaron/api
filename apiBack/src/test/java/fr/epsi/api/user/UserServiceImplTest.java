@@ -2,6 +2,8 @@ package fr.epsi.api.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,12 @@ class UserServiceImplTest {
 	
 	@InjectMocks
 	public UserServiceImpl sut;
+        
+        //Info Professeur:
+        //  Mockito.verify(UserRepository, Mockito.times(1)).findAll()
+        //  ArgumentCaptor<Integer> ac = ArgumentCaptor.forClass(Integer.class)
+        //  Mockito.doReturn(...).when(mock).findById(ac.capture())
+        //  ac.getValue()
 	
 	@Test
 	void testFindAll() {		
@@ -32,5 +40,34 @@ class UserServiceImplTest {
 		//Assert
 		Assertions.assertEquals(users, result, "No user");
 	}
+        
+        @Test
+        public void test_user_exist() {
+            //Arrange
+            User user = new User();
+            user.setPseudo("allan");
+            user.setPassword("bousquet");
+            Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
 
+            //Act
+            User result = sut.find("allan");
+
+            //Assert
+            Assertions.assertEquals(user, result, "Utilisateur existant");
+        }
+        
+        @Test
+        public void test_user_not_exist() {
+            //Arrange
+            Mockito.doReturn(Optional.empty()).when(userRepository).findById("bousquet");
+
+            //Act
+            Exception exception = Assertions.assertThrows(EntityNotFoundException.class, () -> sut.find("bousquet"));
+
+            //Assert
+            Assertions.assertEquals("L'utilisateur bousquet n'existe pas", exception.getMessage());
+        }
+        
+        
+        
 }
