@@ -40,7 +40,7 @@ class UserServiceImplTest {
 	void testlogin() {
 		//Arrange
         User user = new User();
-        String pseudo = "pseudo";
+        String pseudo = "123";
         String password ="password";
         Mockito.doReturn(Optional.of(user)).when(userRepository).findById(pseudo);
         Mockito.doReturn(password).when(securityService).decryptPassword(user.getPassword(),"My_S3cr3t");
