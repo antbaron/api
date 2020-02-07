@@ -1,5 +1,7 @@
 package fr.epsi.api.user;
 
+import fr.epsi.api.security.SecurityService;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,6 +24,9 @@ class UserServiceImplTest {
 
 	@Mock
 	UserRepository userRepository;
+        
+        @Mock
+	SecurityService securityService;
 	
 	@InjectMocks
 	public UserServiceImpl sut;
@@ -56,7 +63,20 @@ class UserServiceImplTest {
 		//Act
 		User result = sut.find("pseudoe");
 		//Assert
-		Assertions.assertEquals(null, result, "No user");
+		Assertions.assertEquals(null, result, "User not null");
 	}
-
+        
+        @Test
+        void testSave() throws UnsupportedEncodingException {
+                //Arrange
+                ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
+                Mockito.doReturn(null).when(userRepository).save(ac.capture());
+                Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
+                //Act
+                sut.save("Sam", "Password");
+                //Assert
+                Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
+                Assertions.assertEquals("Sam", ac.getValue().getPseudo());
+                Assertions.assertEquals("Password", ac.getValue().getPassword());
+        }
 }
