@@ -50,5 +50,15 @@ public class UserServiceImpl implements UserService {
 	public User find(String pseudo) {
 		return userRepository.findById(pseudo).get();
 	}
-
+	
+	//Mockita.verify(userRepository, Mockito.times(1).save(...));
+	//ArgumentCaptor<User> ac = ArgumentCaptor.forClass(user.class());
+	//Mockito.doReturn(null).when(userRepository).save(ac.capture());
+	//ac.getValue();
+	//Optional<User>
+	/*
+	 if(user.isPresent())
+	 	Optional.of(new User());
+	 	Optional.empty();
+	 */
 }

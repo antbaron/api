@@ -14,7 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
-class UserServiceImplTest {
+class UserServiceImplTest 
+{
 
 	@Mock
 	UserRepository userRepository;
@@ -23,14 +24,27 @@ class UserServiceImplTest {
 	public UserServiceImpl sut;
 	
 	@Test
-	void testFindAll() {		
+//	void testFindAll() 
+//	{		
+//		//Arrange
+//		List<User> users = new ArrayList<User>();
+//		Mockito.doReturn(users).when(userRepository).findAll();
+//		//Act
+//		Iterable<User> result = sut.findAll();
+//		//Assert
+//		Assertions.assertEquals(users, result, "No user");
+//	}
+	
+	void testCreate() 
+	{		
 		//Arrange
-		List<User> users = new ArrayList<User>();
-		Mockito.doReturn(users).when(userRepository).findAll();
+		User userOne = new User();
+		Mockito.doReturn(userOne).when(userRepository).save("ripocat", "admin");
+		Mockito.doReturn(userOne).when(userRepository).findAll();
 		//Act
 		Iterable<User> result = sut.findAll();
 		//Assert
-		Assertions.assertEquals(users, result, "No user");
+		Assertions.assertEquals(userOne, result, "One user");
 	}
 
 }
