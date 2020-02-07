@@ -50,8 +50,13 @@ class UserServiceImplTest {
 	}
         
         @Test
-        void testSave() {
-            
-        }
+        void testIfFIndByIdReturnNull() {		
+		//Arrange
+		Mockito.doReturn(Optional.empty()).when(userRepository).findById("pseudoe");
+		//Act
+		User result = sut.find("pseudoe");
+		//Assert
+		Assertions.assertEquals(null, result, "No user");
+	}
 
 }
