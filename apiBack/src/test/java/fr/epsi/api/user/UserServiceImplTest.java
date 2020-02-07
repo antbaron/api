@@ -47,10 +47,10 @@ class UserServiceImplTest {
                 Mockito.doReturn(null).when(userRepository).save(ac.capture());
                 Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
                 //Act
-                sut.save("Sam", "Password");
+                sut.save("Arthur", "Password");
                 //Assert
                 Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
-                Assertions.assertEquals("Sam", ac.getValue().getPseudo());
+                Assertions.assertEquals("Arthur", ac.getValue().getPseudo());
                 Assertions.assertEquals("Password", ac.getValue().getPassword());
    
         }
