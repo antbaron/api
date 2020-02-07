@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import fr.epsi.api.security.SecurityService;
 import fr.epsi.api.user.controller.UserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,12 @@ class UserServiceImplTest {
 
 	@Mock
 	UserRepository userRepository;
-	
+
+	@Mock
+	SecurityService securityService;
+
+	private static final String SECRET_KEY = "My_S3cr3t";
+
 	@InjectMocks
 	public UserServiceImpl sut;
 	
@@ -50,14 +56,15 @@ class UserServiceImplTest {
 	void testSave() throws UnsupportedEncodingException {
 		//Arrange
 		User u = new User();
+		u.setPseudo("test"); u.setPassword("test");
 		ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
-		Mockito.doReturn(u).when(userRepository.save(ac.capture()));
+		Mockito.doReturn("test").when(securityService).encryptPassword("test", SECRET_KEY);
+		Mockito.doReturn(null).when(userRepository).save(ac.capture());
 
 		//Act
 		sut.save("test", "test");
-
 		//Assert
-		Assertions.assertEquals(ac.getValue(), u, "Saved User");
+		Assertions.assertEquals(ac.getValue().getPassword(), u.getPassword(), "Saved User");
 	}
 
 	@Test
