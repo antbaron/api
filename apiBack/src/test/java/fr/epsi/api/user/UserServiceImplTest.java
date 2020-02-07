@@ -4,7 +4,9 @@ import fr.epsi.api.security.SecurityService;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -107,5 +109,19 @@ class UserServiceImplTest {
         //Assert
         Assertions.assertEquals(user, result, "User found");
     }
+    
+    @Test
+    public void testFindKO(){
+        //Arrange
+        User user = new User();
+        user.setPseudo("Test");
+        user.setPassword("Pass");
+        Mockito.doReturn(Optional.empty()).when(userRepository).findById(user.getPseudo());
 
+        //Act
+        User result = sut.find(user.getPseudo());
+
+        //Assert
+        Assertions.assertNull(result);
+    }
 }
