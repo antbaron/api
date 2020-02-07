@@ -75,34 +75,31 @@ class UserServiceImplTest {
         Assertions.assertEquals(user.getPseudo(), user2.getPseudo(), "No pseudo");
     }
 
-
-
     @Test
     void testNotFind() {
-        
+
         String pseudo = "Patrick";
         User user = new User();
         user.setPseudo(pseudo);
         Mockito.doReturn(null).when(userRepository).findById(pseudo);
-        
+
         User result = sut.find(pseudo);
-        
+
         Assertions.assertEquals(null, result, "No user");
     }
 
-    
-        @Test
+    @Test
     void testLogin() throws UnsupportedEncodingException {
         String pseudo = "Patrick";
         String password = "password";
         User user = new User();
         user.setPseudo(pseudo);
         user.setPassword(password);
-        Mockito.doReturn("encryptedPassword").when(securityService).encryptPassword(password, "My_S3cr3t");     
-        sut.save(user.getPseudo(), user.getPassword()); 
+        Mockito.doReturn("encryptedPassword").when(securityService).encryptPassword(password, "My_S3cr3t");
+        sut.save(user.getPseudo(), user.getPassword());
 
         Mockito.doReturn(Optional.of(user)).when(userRepository).findById(pseudo);
-        
+
         sut.login(user.getPseudo(), user.getPassword());
     }
 }
