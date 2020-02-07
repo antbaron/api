@@ -48,7 +48,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User find(String pseudo) {
+            if (userRepository.findById(pseudo).get() != null)
 		return userRepository.findById(pseudo).get();
+            else {
+                return null;
+            }
 	}
 
 }
