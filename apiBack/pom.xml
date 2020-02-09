@@ -121,6 +121,12 @@
 						<version>0.8</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+					<outputFormats>
+						<outputFormat>HTML</outputFormat>
+						<outputFormat>XML</outputFormat>
+					</outputFormats>
+				</configuration>
 
 			</plugin>
 		</plugins>
