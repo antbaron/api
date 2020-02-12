@@ -45,6 +45,17 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(securityService.encryptPassword(password, SECRET_KEY));
 		userRepository.save(user);
 	}
+	
+	@Autowired
+	public void save2(String pseudo, String password) throws UnsupportedEncodingException {
+		Optional<User> user = userRepository.findById(pseudo);
+		if(!user.isPresent()) {
+			User user2 = new User();
+			user2.setPseudo(pseudo);
+			user2.setPassword(securityService.encryptPassword(password, SECRET_KEY));
+			userRepository.save(user2);
+		}
+	}
 
 	@Override
 	public User find(String pseudo) {
