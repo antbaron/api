@@ -96,7 +96,7 @@ class UserServiceImplTest {
 		Mockito.doReturn(Optional.empty()).when(userRepository).findById("notTest");
 
 		Exception exception = Assertions.assertThrows(EntityNotFoundException.class, () -> sut.find("notTest") );
-		Assertions.assertEquals(exception.getMessage(),"User notTest not found");
+		Assertions.assertEquals(exception.getMessage(),"User not found");
 	}
 
 }
