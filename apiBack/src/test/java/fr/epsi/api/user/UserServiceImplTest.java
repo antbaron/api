@@ -45,6 +45,7 @@ class UserServiceImplTest {
 		Assertions.assertEquals(users, result, "No user");
 	}
 
+	//Test de la fonction login
 	@Test
 	void testLogin() {
 		User user = new User();
@@ -60,6 +61,7 @@ class UserServiceImplTest {
 		Mockito.verify(securityService).decryptPassword(ArgumentMatchers.eq("crypt"),anyString());
 	}
 
+	//Test de la fonction save
 	@Test
 	void testSave() throws UnsupportedEncodingException {
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -74,6 +76,7 @@ class UserServiceImplTest {
 		Assertions.assertEquals("crypt",userSaved.getPassword());
 	}
 
+	//Test de la fonction find
 	@Test
 	void testFind(){
 		User user = new User();
