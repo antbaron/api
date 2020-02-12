@@ -33,4 +33,20 @@ class UserServiceImplTest {
 		Assertions.assertEquals(users, result, "No user");
 	}
 
+	@Test testFind(){
+		ArgumentCaptor<user> ac= new User();
+		Mockito.doReturn(user).when(userRepository).find(ac.captured);
+		sut.find();
+		ac.getValue();
+		Assertions.assertEquals(user, result, "No user");
+	}
+
+	@Test save(){
+		User user = mock(User.class);
+		ArgumentCaptor<setPseudo> valueCapture = ArgumentCaptor.forClass(setPseudo.class);
+		ArgumentCaptor<setPassword> valueCapture = ArgumentCaptor.forClass(setPassword.class);
+		Mockito.doReturn(user).when(userRepository).save(user.captured);
+		sut.save("test", "test");
+  		assertEquals("captured", valueCapture.getValue());
+	}
 }
