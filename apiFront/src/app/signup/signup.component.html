@@ -1,0 +1,44 @@
+<mat-card>
+        <mat-card-title>Inscription</mat-card-title>
+        <mat-card-content>
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <mat-form-field>
+                        <input matInput formControlName="username" class="form-control" placeholder="Pseudo">
+                    </mat-form-field>
+                    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                        <div *ngIf="f.username.errors.required">Le pseudo est requis</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <mat-form-field>
+                        <input type="password" matInput formControlName="password" class="form-control" placeholder="Mot de passe">
+                    </mat-form-field>
+                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                        <div *ngIf="f.password.errors.required">Le mot de passe est requis</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                        <mat-form-field>
+                            <input  type="password" matInput formControlName="passwordConfirmation" class="form-control" placeholder="Confirmer le mot de passe">
+                        </mat-form-field>
+                        <div *ngIf="submitted && f.passwordConfirmation.errors" class="invalid-feedback">
+                            <div *ngIf="f.password.errors.required">La confirmation de mot de passe est requise</div>
+                        </div>
+                        <div *ngIf="submitted && registerForm.errors && registerForm.errors.notSame" class="invalid-feedback">
+                            <div >Les mot de passe ne sont pas identique.</div>
+                        </div>
+                        <div *ngIf="submitted && f.password.errors && f.password.errors.minlength" class="invalid-feedback">
+                            <div >Le mot de passe est trop court.</div>
+                        </div>
+                    </div>
+                <div class="form-group btns">
+                    <button  mat-raised-button color="primary" [disabled]="loading">
+                         Inscription
+                    </button>
+                    <a mat-raised-button routerLink="/">Annuler</a>
+                </div>
+                
+            </form>
+        </mat-card-content>
+    </mat-card>
