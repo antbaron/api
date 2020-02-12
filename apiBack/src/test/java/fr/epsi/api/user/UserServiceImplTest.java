@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.epsi.api.security.SecurityService;
-import jdk.tools.jlink.internal.TaskHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @RunWith(JUnitPlatform.class)
 class UserServiceImplTest {
 
+    private static final String SECRET_KEY = "My_S3cr3t";
 	@Mock
 	UserRepository userRepository;
 	
@@ -67,20 +67,32 @@ class UserServiceImplTest {
 		//Arrange
 		ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
 		//On peut mettre ce qu'on veut dans doReturn car la methode est void
-		Mockito.doReturn("ok").when(userRepository).save(ac.capture());
+		Mockito.doReturn(null).when(userRepository).save(ac.capture());
+		Mockito.doReturn("password").when(securityService).encryptPassword("pass",SECRET_KEY);
 
 		//Act
 		sut.save("pseudo","pass");
 
 		//Assert
-		Mockito.verify(sut).save("login","password");
+		Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
+		Mockito.verify(securityService, Mockito.times(1)).encryptPassword("pass",SECRET_KEY);
 		Assertions.assertEquals(ac.getValue().getPseudo(),"pseudo");
+		Assertions.assertEquals(ac.getValue().getPassword(), "password");
 
 	}
 
 	@Test
 	void testFind(){
+        //Arrange
+        ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
+        Mockito.doReturn(null).when(userRepository).findById("toto");
 
+	    //Act
+        sut.find("toto");
+
+        //Assert
+        Mockito.verify(userRepository, Mockito.times(1)).findById("toto");
+        Assertions.assertEquals(ac.getValue().getPseudo(), "toto");
 	}
 
 }
