@@ -1,12 +1,18 @@
 package fr.epsi.api.user;
 
+import fr.epsi.api.security.SecurityService;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import static org.assertj.core.api.InstanceOfAssertFactories.optional;
 import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -27,7 +33,7 @@ class UserServiceImplTest {
 	
 	@Test
 	void testFindAll() {		
-		//Arrange
+		//Arrange 
 		List<User> users = new ArrayList<User>();
 		Mockito.doReturn(users).when(userRepository).findAll();
 		//Act
@@ -53,26 +59,21 @@ class UserServiceImplTest {
 	}
 	
 	@Test 
-	void testSave() {
-		User user = new user();
-		ArgumentCaptor<User> acu = ArgumentCaptor.forClass(user.class);
-		Mockito.doReturn("").when(securityService).encryptPassword("123", SECRET_KEY);
-		sut.save("123", "password");
-		Assertion.assertEquals(actu.getValue(), "Saved user");
+	void testSave() throws UnsupportedEncodingException {
+		User user = new User();
+		ArgumentCaptor<User> acu = ArgumentCaptor.forClass(User.class);
+		Mockito.doReturn("").when(securityService).encryptPassword("123", "My_S3cr3t");
+		sut.save("test", "password");
+		assertEquals(acu.getValue(), "Saved user");
 		
 	}
 	
 	@Test 
-	void tesFindById() {
-		User user = new user();
-		
-		Optional<User> _user = optional.of(user);
-		Mockito.doReturn(_user).when(userRepository).findById("1");
-		
+	void testFind() {
+		User user = new User();
+		Mockito.doReturn(user).when(userRepository).findById("1");
 		User result = sut.find("1");
-		Assertion.assertEquals(result, user)
-		
-		
+		Assertions.assertEquals(user, result);
 				
 		
 	}
