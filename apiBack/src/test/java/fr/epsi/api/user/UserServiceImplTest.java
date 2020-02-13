@@ -25,58 +25,97 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnitPlatform.class)
 class UserServiceImplTest {
 
+	private static final String SECRET_KEY = "My_S3cr3t";
+
 	@Mock
 	UserRepository userRepository;
 
 	@Mock
 	SecurityService securityService;
 
-	private static final String SECRET_KEY = "My_S3cr3t";
-
 	@InjectMocks
 	public UserServiceImpl sut;
 	
 	@Test
-	void testFindAll() {		
-		//Arrange
-		List<User> users = new ArrayList<User>();
-		Mockito.doReturn(users).when(userRepository).findAll();
-		//Act
-		Iterable<User> result = sut.findAll();
-		//Assert
-		Assertions.assertEquals(users, result, "No user");
+	void testFindAll() {
+		List<User> test_users = new ArrayList<User>();
+		Mockito.doReturn(test_users).when(userRepository).findAll();
+		Iterable<User> result_list = sut.findAll();
+		Assertions.assertEquals(test_users, result_list, "No user");
 	}
 
 	@Test
-	void testLogin(){
+	void testLoginPassant() {
+		User test_user = new User();
+		test_user.setPseudo("user_test");
+		test_user.setPassword("pwd");
+		Mockito.doReturn(Optional.of(test_user)).when(userRepository).findById(test_user.getPseudo());
+		Mockito.doReturn(test_user.getPassword()).when(securityService).decryptPassword(test_user.getPassword(), SECRET_KEY);
+		sut.login(test_user.getPseudo(), test_user.getPassword());
+		Mockito.verify(securityService).decryptPassword(test_user.getPassword(), SECRET_KEY);
+	}
 
+	@Test
+	void testLoginNonPassant() {
+		User test_user = new User();
+		test_user.setPseudo("user_test");
+		Mockito.when(userRepository.findById("user_test")).thenReturn(Optional.of(test_user));
+		try {
+			sut.login("user_test", "pwd");
+			Assertions.fail("La méthode aurait du lever une exception");
+		} catch (Exception e) {
+			Assertions.assertEquals(e.getMessage(), "Not connected");
+		}
+		Assertions.assertThrows(Exception.class, ()-> {sut.login("user_test", "pwd"); });
 	}
 
 	@Test
 	void testSave() throws UnsupportedEncodingException {
-		//Arrange
-		User u = new User();
-		u.setPseudo("test"); u.setPassword("test");
-		ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
-		Mockito.doReturn("test").when(securityService).encryptPassword("test", SECRET_KEY);
-		Mockito.doReturn(null).when(userRepository).save(ac.capture());
-
-		//Act
-		sut.save("test", "test");
-		//Assert
-		Assertions.assertEquals(ac.getValue().getPassword(), u.getPassword(), "Saved User");
+		User test_users = new User();
+		test_users.setPseudo("user_test");
+		test_users.setPassword("pwd");
+		ArgumentCaptor<User> arg_captor_user = ArgumentCaptor.forClass(User.class);
+		Mockito.doReturn("pwd").when(securityService).encryptPassword("pwd", SECRET_KEY);
+		Mockito.doReturn(null).when(userRepository).save(arg_captor_user.capture());
+		sut.save("user_test", "pwd");
+		Assertions.assertEquals(arg_captor_user.getValue().getPassword(), test_users.getPassword(), "Saved User");
 	}
 
 	@Test
-	void testFinbyId(){
-		//Arrange
-		User u = new User();
-		Optional<User> user = Optional.of(u);
-		Mockito.doReturn(user).when(userRepository).findById("1");
-		//Act
+	void testSaveNonPassant() throws UnsupportedEncodingException {
+		User test_user = new User();
+		test_user.setPseudo("user_test");
+		test_user.setPassword("");
+		Mockito.when(securityService.encryptPassword("", SECRET_KEY)).thenThrow(new UnsupportedEncodingException("Erreur d'encryptage"));
+		try {
+			sut.save("user_test", "");
+			Assertions.fail("La méthode aurait du lever une exception");
+		} catch (UnsupportedEncodingException e) {
+			Assertions.assertEquals(e.getMessage(), "Erreur d'encryptage");
+		}
+		Assertions.assertThrows(UnsupportedEncodingException.class, ()-> {sut.save("user_test", ""); });
+	}
+
+	@Test
+	void testFinbyIdPassant(){
+		User test_users = new User();
+		Optional<User> user_optional = Optional.of(test_users);
+		Mockito.doReturn(user_optional).when(userRepository).findById("1");
 		User result = sut.find("1");
-		//Assert
-		Assertions.assertEquals(result, u, "Same user");
+		Assertions.assertEquals(result, test_users);
+	}
+
+	@Test
+	void testFindNonPassant() {
+		User test_user = new User();
+		test_user.setPseudo("test_user");
+		Mockito.when(userRepository.findById("test_user")).thenReturn(Optional.empty());
+		try {
+			sut.find("test_user");
+			Assertions.fail("Pas de pseudo correspondant");
+		} catch (Exception e) {
+			Assertions.assertEquals(e.getMessage(), "No value present");
+		}
 	}
 
 }
