@@ -60,7 +60,9 @@ class UserServiceImplTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.doReturn("157268426").when(securityService).encryptPassword(anyString(), anyString());
         Mockito.doReturn(null).when(userRepository).save(userCaptor.capture());
-        sut.save("mougui", "password");
+        sut.save("mougui", "157268426");
+        Mockito.verify(securityService,Mockito.times(1)).encryptPassword("157268426", "My_S3cr3t");
+        Mockito.verify(userRepository).save(userCaptor.getValue());
         User userSaved = userCaptor.getValue();
         User user = new User();
         user.setPseudo("mougui");
