@@ -30,6 +30,9 @@ class UserServiceImplTest {
 	@InjectMocks
 	public UserServiceImpl sut;
 	
+
+	private static final String SECRET_KEY = "My_S3cr3t";
+	
 	@Mock
 	public SecurityService securityService;
 	
@@ -51,12 +54,13 @@ class UserServiceImplTest {
 			//Arrange
             ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
             Mockito.doReturn(null).when(userRepository).save(ac.capture());
-			Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
+			Mockito.doReturn("Password").when(securityService).encryptPassword("UserPassword", SECRET_KEY);
             //Act
             sut.save("UserTest", "UserPassword");
             //Assert
+            Mockito.verify(securityService,Mockito.times(1)).encryptPassword("UserPassword", SECRET_KEY);
             Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
-            Assertions.assertEquals("Sam", ac.getValue().getPseudo());
+            Assertions.assertEquals("UserTest", ac.getValue().getPseudo());
             Assertions.assertEquals("Password", ac.getValue().getPassword());
 		
 	}
@@ -64,11 +68,14 @@ class UserServiceImplTest {
 	@Test
 	void testFind() {
 
-       ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
-        Mockito.doReturn(null).when(userRepository).save(ac.capture());
-		Mockito.doReturn("Password").when(securityService).encryptPassword(ArgumentMatchers.eq("Password"), anyString());
+       	
 		
-		sut.find("antbaron");
+		
+	}
+	
+	
+	@Test
+	void testLogin() {
 		
 		
 	}
