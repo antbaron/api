@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.epsi.api.security.SecurityService;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -47,8 +48,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User find(String pseudo) {
-        return userRepository.findById(pseudo).get();
+    public User find(String pseudo) throws NoSuchElementException {
+
+        try {
+            return userRepository.findById(pseudo).get();
+        } catch (NoSuchElementException exception) {
+            return null;
+        }
+
     }
 
 }

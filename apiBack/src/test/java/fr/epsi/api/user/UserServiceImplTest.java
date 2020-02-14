@@ -32,9 +32,10 @@ class UserServiceImplTest {
 
     @InjectMocks
     public UserServiceImpl sut;
+    
 
     @Test
-    void testFindAll() {
+    void testFindAllOK() {
         //Arrange
         List<User> users = new ArrayList<User>();
         Mockito.doReturn(users).when(userRepository).findAll();
@@ -43,6 +44,20 @@ class UserServiceImplTest {
         //Assert
         Assertions.assertEquals(users, result, "No user");
     }
+    
+//    @Test
+//    public void testFindAllKO() {
+//        //Arrange
+//        List<User> users = new ArrayList<User>();
+//        Mockito.doReturn(users).when(userRepository).findAll();
+//
+//        //Act
+//        Iterable<User> result = sut.findAll();
+//
+//        //Assert
+//        Assertions.assertEquals(users, result, "No user");
+//        
+//    }
 
     @Test
     void testLoginOK() {
@@ -60,7 +75,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testLoginKO() {
+    void testLoginKOPass() {
         //Arrange
         User user = new User();
         user.setPseudo("Test");
@@ -73,9 +88,24 @@ class UserServiceImplTest {
         //Assert
         Mockito.verify(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
     }
+    
+    @Test
+    void testLoginKOPseudo() {
+        //Arrange
+        User user = new User();
+        user.setPseudo("Test");
+        user.setPassword("Pass");
+        String SECRET_KEY = "My_S3cr3t";
+        Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
+        Mockito.doReturn(user.getPassword()).when(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
+        //Act
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.login("Test", "password"));
+        //Assert
+        Mockito.verify(userRepository).findById(user.getPseudo());
+    }
 
     @Test
-    public void testSave() throws UnsupportedEncodingException {
+    public void testSaveOK() throws UnsupportedEncodingException {
         //Arrange
         User user = new User();
         user.setPseudo("Test");
@@ -93,6 +123,50 @@ class UserServiceImplTest {
         Mockito.verify(userRepository).save(argumentCaptor.getValue());
         Assertions.assertEquals("Test", argumentCaptor.getValue().getPseudo());
         Assertions.assertEquals("pasCrypt", argumentCaptor.getValue().getPassword());
+    }
+    
+//    @Test
+//    public void SaveProf() throws UnsupportedEncodingException{
+//        //Arrange
+//        User user = new User();
+//        user.setPseudo("Test");
+//        user.setPassword("Pass");
+//        String SECRET_KEY = "My_S3cr3t";
+//        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+//        Mockito.doReturn(user).when(userRepository).save(argumentCaptor.capture());
+//        Mockito.doReturn("pasCrypt")
+//                .when(securityService)
+//                .encryptPassword(ArgumentMatchers.eq("Pass"), anyString());
+//
+//        //Act
+//        sut.save(user.getPseudo(), user.getPassword());
+//
+//        //Assert
+//        Mockito.verify(securityService,Mockito.times(1)).encryptPassword("pass", SECRET_KEY);
+//        Mockito.verify(userRepository).save(argumentCaptor.getValue());
+//        Assertions.assertEquals("Test", argumentCaptor.getValue().getPseudo());
+//        Assertions.assertEquals("pasCrypt", argumentCaptor.getValue().getPassword());
+//    }
+    
+    @Test
+    public void testSavePassKO() throws UnsupportedEncodingException {
+        //Arrange
+        User user = new User();
+        user.setPseudo("Test");
+        user.setPassword("Pass");
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.doReturn(user).when(userRepository).save(argumentCaptor.capture());
+        Mockito.doReturn("pasCryptTrue")
+                .when(securityService)
+                .encryptPassword(ArgumentMatchers.eq("Pass"), anyString());
+
+        //Act
+        sut.save(user.getPseudo(), user.getPassword());
+
+        //Assert
+        Mockito.verify(userRepository).save(argumentCaptor.getValue());
+        Assertions.assertEquals("Test", argumentCaptor.getValue().getPseudo());
+        Assertions.assertNotEquals("pasCryptFalse", "pasCryptTrue", "Error False Password");
     }
     
     @Test
