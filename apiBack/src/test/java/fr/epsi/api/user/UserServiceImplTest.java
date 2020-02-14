@@ -88,6 +88,7 @@ class UserServiceImplTest {
         Assertions.assertEquals(null, result, "No user");
     }
 
+    
     @Test
     void testLogin() throws UnsupportedEncodingException {
         String pseudo = "Patrick";
