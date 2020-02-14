@@ -12,7 +12,7 @@
 	<groupId>fr.epsi</groupId>
 	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>api</name>
+	<name>EPSI_TESTS_SpringBoot_ApiBack</name>
 	<description>Api</description>
 
 	<properties>

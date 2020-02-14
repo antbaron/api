@@ -10,47 +10,46 @@ import fr.epsi.api.user.controller.UserDto;
 
 @Entity
 public class User {
-	@Id
-	private String pseudo;
 
-	private String password;
-	
-	@OneToOne(mappedBy = "user")
-	private Financial financial;
+    @Id
+    private String pseudo;
 
-	public String getPseudo() {
-		return pseudo;
-	}
+    private String password;
 
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
-	}
+    @OneToOne(mappedBy = "user")
+    private Financial financial;
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPseudo() {
+        return pseudo;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
-	public Financial getFinancial() {
-		return financial;
-	}
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
+    }
 
-	public void setFinancial(Financial financial) {
-		this.financial = financial;
-	}
-	
-	public UserDto toUserDto() {
-		UserDto userDto = new UserDto();
-		userDto.setPseudo(pseudo);
-		if(this.financial != null) {
-			userDto.setFinancialDto(this.financial.toFinancialDto());		
-		}
-		return userDto;
-	}
-	
-	
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Financial getFinancial() {
+        return financial;
+    }
+
+    public void setFinancial(Financial financial) {
+        this.financial = financial;
+    }
+
+    public UserDto toUserDto() {
+        UserDto userDto = new UserDto();
+        userDto.setPseudo(pseudo);
+        if (this.financial != null) {
+            userDto.setFinancialDto(this.financial.toFinancialDto());
+        }
+        return userDto;
+    }
 
 }
