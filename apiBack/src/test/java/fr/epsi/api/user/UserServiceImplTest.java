@@ -96,12 +96,12 @@ class UserServiceImplTest {
         user.setPseudo("Test");
         user.setPassword("Pass");
         String SECRET_KEY = "My_S3cr3t";
-        Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
-        Mockito.doReturn(user.getPassword()).when(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
+        Mockito.doReturn(Optional.empty()).when(userRepository).findById("");
+        //Mockito.doReturn(user.getPassword()).when(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
         //Act
-        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.login("Test", "password"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.login("", "password"));
         //Assert
-        Mockito.verify(userRepository).findById(user.getPseudo());
+        Mockito.verify(userRepository).findById("");
     }
 
     @Test
@@ -114,7 +114,7 @@ class UserServiceImplTest {
         Mockito.doReturn(user).when(userRepository).save(argumentCaptor.capture());
         Mockito.doReturn("pasCrypt")
                 .when(securityService)
-                .encryptPassword(ArgumentMatchers.eq("Pass"), anyString());
+                .encryptPassword(Mockito.eq("Pass"), anyString());//changement vrai val
 
         //Act
         sut.save(user.getPseudo(), user.getPassword());
@@ -187,13 +187,10 @@ class UserServiceImplTest {
     @Test
     public void testFindKO(){
         //Arrange
-        User user = new User();
-        user.setPseudo("Test");
-        user.setPassword("Pass");
-        Mockito.doReturn(Optional.empty()).when(userRepository).findById(user.getPseudo());
+        Mockito.doReturn(Optional.empty()).when(userRepository).findById("Pouette");
 
         //Act
-        User result = sut.find(user.getPseudo());
+        User result = sut.find("Pouette");
 
         //Assert
         Assertions.assertNull(result);

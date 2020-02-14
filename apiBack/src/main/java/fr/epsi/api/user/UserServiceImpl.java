@@ -48,11 +48,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User find(String pseudo) throws NoSuchElementException {
-
-        try {
-            return userRepository.findById(pseudo).get();
-        } catch (NoSuchElementException exception) {
+    public User find(String pseudo){
+        Optional<User> user = userRepository.findById(pseudo);
+        if (user.isPresent()) {
+            return user.get();
+        }else{
             return null;
         }
 
