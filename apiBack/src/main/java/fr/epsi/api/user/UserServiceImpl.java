@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void login(String pseudo, String password) {
+//        On pouvait faire 4 tests ici: log ok/pass ok - log ko / pass ok etc....
         Optional<User> user = userRepository.findById(pseudo);
         Assert.isTrue(
                 user.isPresent()
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(String pseudo, String password) throws UnsupportedEncodingException {
+//        tester pseudo null ou password null (modifier la fonction ?) donc 4 tests
         User user = new User();
         user.setPseudo(pseudo);
         user.setPassword(securityService.encryptPassword(password, SECRET_KEY));

@@ -124,10 +124,44 @@ class UserServiceImplTest {
         Mockito.verify(securityService, Mockito.times(1)).decryptPassword("admin", SECRET_KEY);
     }
 
+    
+    @Test
+    void testLoginPassOkLogKo(){
+        //Arrange
+        String SECRET_KEY = "My_S3cr3t";
+        User michel = new User();
+        michel.setPseudo("Michel");
+        michel.setPassword("admin");
+        Mockito.doReturn(Optional.of(michel)).when(userRepository).findById("Michel");
+        Mockito.doReturn(null).when(securityService).decryptPassword("admin", SECRET_KEY);
+
+        //Act
+        sut.login("FauxPseudo", "admin");
+
+        //Assert
+        //        Mockito.doThrow(toBeThrown)
+        Mockito.verify(userRepository, Mockito.times(1)).findById("FauxPseudo");
+        
+        
+    }
+    
+    @Test
+    void testLoginPassKoLogKo(){
+        
+    }
+   
+     @Test
+    void testLoginPassKoLogOk(){
+        
+    }
+    
+    
     @Test
     void test05SaveUser() throws UnsupportedEncodingException {
         //        se servir du ArgumentCaptor car on a pas la main dessus sur le retour (on teste un void...)
         //Arrange
+        String SECRET_KEY = "My_S3cr3t";
+
         User user = new User();
         user.setPseudo("Michel");
         user.setPassword("admin");
@@ -138,6 +172,8 @@ class UserServiceImplTest {
                 .encryptPassword(ArgumentMatchers.eq("admin"), anyString());
 
         //Act
+        // On sait que la methode save (voir code source) utilise user repo et securityservice.
+        // Ils devront donc être mockés
         sut.save(user.getPseudo(), user.getPassword());
 
         //Assert
@@ -145,10 +181,52 @@ class UserServiceImplTest {
         Assertions.assertEquals("Michel", argumentCaptor.getValue().getPseudo());
         Assertions.assertEquals("pasCrypt", argumentCaptor.getValue().getPassword());
     }
+    
+    
+    
+    
+    @Test
+     void test06SaveUserCORRECTION() throws UnsupportedEncodingException {
+        //        se servir du ArgumentCaptor car on a pas la main dessus sur le retour (on teste un void...)
+        //Arrange
+        String SECRET_KEY = "My_S3cr3t";
+
+//        User user = new User();
+//        user.setPseudo("Michel");
+//        user.setPassword("admin");
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.doReturn("pasCrypt")
+                .when(securityService)
+                .encryptPassword("admin", SECRET_KEY);
+        Mockito.doReturn(null).when(userRepository).save(argumentCaptor.capture());
+
+        //Act
+        // On sait que la methode save (voir code source) utilise user repo et securityservice.
+        // Ils devront donc être mockés
+        sut.save("Michel", "admin");
+
+        //Assert
+        
+        Mockito.verify(securityService, Mockito.times(1)).encryptPassword("admin", SECRET_KEY);
+        Mockito.verify(userRepository).save(argumentCaptor.getValue());
+        Assertions.assertEquals(argumentCaptor.getValue().getPseudo(), "Michel");
+        Assertions.assertEquals(argumentCaptor.getValue().getPassword(), "pasCrypt");
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     @Test
-    void test06UserAbsent() {
-        
+    void test07UserAbsent() {
+
         //Arrange
         User michel = new User();
         michel.setPseudo("Michel");
@@ -162,5 +240,5 @@ class UserServiceImplTest {
         Assertions.assertNull(result);
 
     }
-    
+
 }
