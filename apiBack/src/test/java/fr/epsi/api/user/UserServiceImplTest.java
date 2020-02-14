@@ -20,53 +20,67 @@ import static org.mockito.ArgumentMatchers.anyString;
 @RunWith(JUnitPlatform.class)
 class UserServiceImplTest {
 
-	@Mock
-	UserRepository userRepository;
-	@Mock
-	SecurityService securityService;
-	
-	@InjectMocks
-	public UserServiceImpl sut;
-	
-	@Test
-	void testFindAll() {		
-		//Arrange
-		List<User> users = new ArrayList<User>();
-		Mockito.doReturn(users).when(userRepository).findAll();
-		//Act
-		Iterable<User> result = sut.findAll();
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    SecurityService securityService;
+
+    @InjectMocks
+    public UserServiceImpl sut;
+
+    @Test
+    void testFindAll() {
+        //Arrange
+        List<User> users = new ArrayList<User>();
+        Mockito.doReturn(users).when(userRepository).findAll();
+        //Act
+        Iterable<User> result = sut.findAll();
+        //Assert
+        Assertions.assertEquals(users, result, "No user");
+    }
+
+    @Test
+    void testFindById() {
+        //Création de d'un user
+        User user = new User();
+        user.setPseudo("Alec");
+        user.setPassword("azerty");
+
+        //Arrange
+        Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
+        //Act
+        User result = sut.find(user.getPseudo());
+        //Assert
+        Assertions.assertEquals(user, result, "User found");
+    }
+
+    @Test
+    void testSave() throws UnsupportedEncodingException {
+        //Arrange
+        ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
+        Mockito.doReturn(null).when(userRepository).save(ac.capture());
+        Mockito.doReturn("NewPassword").when(securityService).encryptPassword(ArgumentMatchers.eq("NewPassword"), anyString());
+        //Act
+        sut.save("NewPseudo", "NewPassword");
 		//Assert
-		Assertions.assertEquals(users, result, "No user");
-	}
+        Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
+        Assertions.assertEquals("NewPseudo", ac.getValue().getPseudo());
+        Assertions.assertEquals("NewPassword", ac.getValue().getPassword());
+    }
 
-	@Test
-	void testFindById(){
-		//Création de d'un user
-		User user = new User();
-		user.setPseudo("Alec");
-		user.setPassword("azerty");
-
-		//Arrange
-		Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
-		//Act
-		User result = sut.find(user.getPseudo());
-		//Assert
-		Assertions.assertEquals(user, result, "User found");
-	}
-
-	@Test
-	void testSave() throws UnsupportedEncodingException {
-		//Arrange
-		ArgumentCaptor<User> ac = ArgumentCaptor.forClass(User.class);
-		Mockito.doReturn(null).when(userRepository).save(ac.capture());
-		Mockito.doReturn("NewPassword").when(securityService).encryptPassword(ArgumentMatchers.eq("NewPassword"), anyString());
-		//Act
-		sut.save("NewPseudo", "NewPassword");
-		//Assert
-		Mockito.verify(userRepository, Mockito.times(1)).save(ac.getValue());
-		Assertions.assertEquals("NewPseudo", ac.getValue().getPseudo());
-		Assertions.assertEquals("NewPassword", ac.getValue().getPassword());
-	}
-
+    @Test
+    void testLoginOk() {
+        //Arrange
+        User user = new User();
+        user.setPseudo("test");
+        user.setPassword("Pass");
+        String SECRET_KEY = "My_S3cr3t";
+        Mockito.doReturn(Optional.of(user)).when(userRepository).findById(user.getPseudo());
+        Mockito.doReturn(user.getPassword()).when(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
+        //Act
+        sut.login(user.getPseudo(), user.getPassword());
+        //Assert
+        Mockito.verify(securityService).decryptPassword(user.getPassword(), SECRET_KEY);
+    }
 
 }
