@@ -46,9 +46,15 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+
 	@Override
 	public User find(String pseudo) {
-		return userRepository.findById(pseudo).get();
+                Optional<User> user = userRepository.findById(pseudo);
+                if (user.isPresent()){
+                    return user.get();
+                } else {
+                    return null;
+                }
 	}
 
 }
