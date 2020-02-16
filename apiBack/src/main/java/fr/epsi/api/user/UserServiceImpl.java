@@ -32,6 +32,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void login(String pseudo, String password) {
 		Optional<User> user = userRepository.findById(pseudo);
+		/*boolean checkLogin = user.isPresent() && password.equals(securityService.decryptPassword(user.get().getPassword(), SECRET_KEY));
+
+		if (checkLogin) {
+			System.out.println("Connecté");
+		} else {
+			System.out.println("Non Connecté");
+		}*/
 		Assert.isTrue(
 				user.isPresent()
 						&& password.equals(securityService.decryptPassword(user.get().getPassword(), SECRET_KEY)),
@@ -48,7 +55,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User find(String pseudo) {
-		return userRepository.findById(pseudo).get();
+		//return userRepository.findById(pseudo).get();
+		return userRepository.findById(pseudo).orElse(null);
 	}
 
 }
